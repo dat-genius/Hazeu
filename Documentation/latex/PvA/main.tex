@@ -1,0 +1,111 @@
+\documentclass[12pt]{article}
+
+
+%%% packages used %%%
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{graphicx,wrapfig}
+\usepackage{enumitem}
+\usepackage{color,xcolor}
+\usepackage[square,numbers,sort&compress]{natbib}
+\usepackage{float}
+\usepackage{morefloats}
+\usepackage[section]{placeins}
+
+%%% URL's and breaking them %%%
+\usepackage{url}
+\usepackage{breakurl} 
+\usepackage[breaklinks]{hyperref}
+\def\UrlBreaks{\do\/\do-}
+
+%%% Good way to show TODO's %%%
+\newcommand\todo[1]{\colorbox{yellow}{\textbf{TODO: #1}}}
+
+%%% better references to figures %%%
+\usepackage{cleveref} %must come after hyperref
+\crefname{figure}{figure}{figure}
+
+
+%%% language and hyphenation %%%
+\usepackage[english]{babel}
+
+%%% code windows %%%
+\usepackage{listings}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\renewcommand{\lstlistingname}{Code}
+\lstset{
+	frame=tb,
+	language=C,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=fixed,
+	basicstyle={\footnotesize\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3,
+	basewidth=.5em,
+	captionpos=b
+}
+
+%%% header and footer %%%
+\pagestyle{fancy}
+\fancyfoot[R]{Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[C]{}
+\fancyhead[R]{}
+\fancyhead[L]{}
+
+%%% formatting %%%
+\newlength\tindent %no indent
+\setlength{\tindent}{\parindent} %no indent
+\setlength{\parindent}{0pt} %no indent
+\renewcommand{\indent}{\hspace*{\tindent}} %no indent
+\newcommand{\mylist}[2]{\vbox{\smallskip#1 \begin{enumerate}[topsep=3pt,itemsep=0pt,partopsep=1ex,parsep=1ex,label=$\bullet$] #2 \end{enumerate}}\bigskip} %my own listing format
+
+%%% coloring and figures %%%
+\definecolor{textgray}{RGB}{130,130,130}
+\usepackage[font={color=textgray,small},figurename=Figure,labelfont={it,bf}]{caption} %for caption below images
+
+%%% sections and references %%%
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}} % One single link
+\newcommand{\subsectionextra}[2][\medskip]{\bigskip\textbf{#2#1\newline}}
+
+
+%%% Resize to normal a4paper and remove the rediculously large borders %%
+\usepackage[a4paper,left=3cm, right=3cm, top=3.01cm, bottom=1.01cm]{geometry}
+\setlength{\headheight}{1.1\baselineskip}
+
+%%% Title and Author %%%
+\newcommand{\thistitle}{Hazeu - Automatisch orchideeën inpakken Plan van Aanpak}
+\author{}
+\title{\thistitle}
+\date{\today}
+\newcommand{\version}{V1.1}
+\fancyhead[C] {\color{textgray}\thistitle \space- \version\space - \today}
+\def\headrule{\color{textgray}\rule{\textwidth}{.4pt}}
+
+
+%%% Actual begin  %%%
+\begin{document}
+	\input{frontpage.tex}
+	
+	
+	
+	%%% the references made by bib (see citation.bib) %%%
+	\bibliographystyle{unsrtnat}
+	\renewcommand\bibsection{\section*{Literature and references}}
+	\addcontentsline{toc}{section}{\protect Literature and references}%
+	\bibliography{citations}
+	
+	
+\end{document}
