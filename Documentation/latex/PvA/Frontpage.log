@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6350 64-bit) (preloaded format=pdflatex 2017.9.14)  15 SEP 2017 13:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6350 64-bit) (preloaded format=pdflatex 2017.9.11)  15 SEP 2017 13:32
 entering extended mode
-**./Frontpage.tex
-(Frontpage.tex
+**./frontpage.tex
+(frontpage.tex
 LaTeX2e <2017-04-15>
 Babel <3.10> and hyphenation patterns for 75 language(s) loaded.
 
@@ -422,14 +422,14 @@ Missing character: There is no c in font nullfont!
 Missing character: There is no m in font nullfont!
 )
 ! Emergency stop.
-<*> ./Frontpage.tex
+<*> ./frontpage.tex
                    
 *** (job aborted, no legal \end found)
 
  
 Here is how much of TeX's memory you used:
  19 strings out of 493323
- 215 string characters out of 3139066
+ 215 string characters out of 3139063
  54648 words of memory out of 3000000
  3657 multiletter control sequences out of 15000+200000
  3948 words of font info for 15 fonts, out of 3000000 for 9000
