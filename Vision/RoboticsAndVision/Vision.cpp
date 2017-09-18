@@ -16,12 +16,15 @@ using namespace std;
 VideoCapture cap(2); //0 is the camera on the pc. Higher number is different camera. Insert filename to play video frame by frame
 
 
+
 int main()
 {
 	//namedWindow("Camera Window", WINDOW_AUTOSIZE);
-	namedWindow("Hough Circle Transform Demo", CV_WINDOW_AUTOSIZE);
+	namedWindow("Camera", CV_WINDOW_AUTOSIZE);
 	if (cap.isOpened()) {
 		while (1) {
+
+			/*
 			Mat image, grayimage;
 
 			cap.read(image);
@@ -63,7 +66,7 @@ int main()
 			} else {
 				cout << "End of the file or camera disconnected!" << endl;
 				system("Pause");
-			}
+			}*/
 
 		}
 
