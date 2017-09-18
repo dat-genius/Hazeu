@@ -1,1 +1,2 @@
 https://theses.lib.vt.edu/theses/available/etd-12232009-222118/unrestricted/Short_NJ_T_2009.pdf
+http://opencvexamples.blogspot.com/p/learning-opencv-functions-step-by-step.html
