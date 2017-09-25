@@ -48,7 +48,7 @@ int main()
 		//get binary image  
 		//inRange(hsv, Scalar(0, 85, 241), Scalar(18, 255, 255), binary);
 		// imshow("Binary",binary);
-		inRange(hsv, Scalar(0, 0, 200), Scalar(255, 255, 255), binary);
+		inRange(hsv, Scalar(0, 0, 200), Scalar(255, 10, 255), binary);
 		// imshow("Binary",binary);  
 
 		//find contours from binary image  
