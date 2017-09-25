@@ -14,7 +14,7 @@
 using namespace cv;
 using namespace std;
 
-//VideoCapture cap(2); //0 is the camera on the pc. Higher number is different camera. Insert filename to play video frame by frame
+VideoCapture cap(1); //0 is the camera on the pc. Higher number is different camera. Insert filename to play video frame by frame
 
 Mat src; Mat src_gray; Mat src_hsv;
 int circularity, thresh = 100;
@@ -33,59 +33,64 @@ int main()
 	cvNamedWindow("LargestContour", CV_WINDOW_KEEPRATIO);
 	cvNamedWindow("Final", CV_WINDOW_KEEPRATIO);
 	Mat img, hsv, binary;
+	while (1) {
+		cap.read(img);
+		//img = imread("C:\\Users\\Genius\\Pictures\\hazeu\\zonderflits2.jpg"); 
+		//change this path according to your image file path  
+		// imshow("RGB",img);  
 
-	img = imread("C:\\Users\\Genius\\Pictures\\hazeu\\zonderflits1.jpg"); //change this path according to your image file path  
-																   // imshow("RGB",img);  
+		//convert RGB image into HSV image  
+		cvtColor(img, hsv, CV_BGR2HSV);
+		imshow("HSV", hsv);
 
-																   //convert RGB image into HSV image  
-	cvtColor(img, hsv, CV_BGR2HSV);
-	imshow("HSV", hsv);
+		//get binary image  
+		//inRange(hsv, Scalar(0, 255, 255), Scalar(179, 255, 255), binary);
+		//get binary image  
+		//inRange(hsv, Scalar(0, 85, 241), Scalar(18, 255, 255), binary);
+		// imshow("Binary",binary);
+		inRange(hsv, Scalar(0, 0, 200), Scalar(255, 255, 255), binary);
+		// imshow("Binary",binary);  
 
-	//get binary image  
-	//inRange(hsv, Scalar(0, 255, 255), Scalar(179, 255, 255), binary);
-	//get binary image  
-	//inRange(hsv, Scalar(0, 85, 241), Scalar(18, 255, 255), binary);
-	// imshow("Binary",binary);
-	inRange(hsv, Scalar(0, 0, 200), Scalar(255, 255, 255), binary);
-	// imshow("Binary",binary);  
+		//find contours from binary image  
+		int i;
+		vector< vector<Point> > contours;
+		findContours(binary, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE); //find contours  
+		vector<double> areas(contours.size());
+		//find largest contour area  
+		for (i = 0; i < contours.size(); i++)
+		{
+			areas[i] = contourArea(Mat(contours[i]));
+		}
+		//get index of largest contour  
+		double max;
+		Point maxPosition;
+		minMaxLoc(Mat(areas), 0, &max, 0, &maxPosition);
+		//draw largest contour.  
+		drawContours(binary, contours, maxPosition.y, Scalar(255), CV_FILLED);
+		imshow("LargestContour", binary);
 
-	//find contours from binary image  
-	int i;
-	vector< vector<Point> > contours;
-	findContours(binary, contours, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE); //find contours  
-	vector<double> areas(contours.size());
-	//find largest contour area  
-	for (i = 0; i < contours.size(); i++)
-	{
-		areas[i] = contourArea(Mat(contours[i]));
+		//draw bounding rectangle around largest contour  
+		Point center;
+		Rect r;
+		if (contours.size() >= 1)
+		{
+			r = boundingRect(contours[maxPosition.y]);
+			rectangle(img, r.tl(), r.br(), CV_RGB(0, 0, 255), 3, 8, 0); //draw rectangle  
+		}
+		//get centroid  
+		center.x = r.x + (r.width / 2);
+		center.y = r.y + (r.height / 2);
+		cout << center.x << " , " << center.y << endl;
+
+		//print x and y co-ordinates on image  
+		char x[15], y[6];
+		/*	itoa(center.x, x, 10);
+			itoa(center.y, y, 10);
+			strcat(x, ",");
+			putText(img, strcat(x, y), center, FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255, 0, 0), 1, CV_AA);*/
+		imshow("Final", img);
+		cvWaitKey();
 	}
-	//get index of largest contour  
-	double max;
-	Point maxPosition;
-	minMaxLoc(Mat(areas), 0, &max, 0, &maxPosition);
-	//draw largest contour.  
-	drawContours(binary, contours, maxPosition.y, Scalar(255), CV_FILLED);
-	imshow("LargestContour", binary);
-
-	//draw bounding rectangle around largest contour  
-	Point center;
-	Rect r;
-	if (contours.size() >= 1)
-	{
-		r = boundingRect(contours[maxPosition.y]);
-		rectangle(img, r.tl(), r.br(), CV_RGB(0, 0, 255), 3, 8, 0); //draw rectangle  
-	}
-	//get centroid  
-	center.x = r.x + (r.width / 2);
-	center.y = r.y + (r.height / 2);
-
-	//print x and y co-ordinates on image  
-	char x[15], y[6];
-/*	itoa(center.x, x, 10);
-	itoa(center.y, y, 10);
-	strcat(x, ",");
-	putText(img, strcat(x, y), center, FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255, 0, 0), 1, CV_AA);*/
-	imshow("Final", img);
 
 	//wait for key press  
 	cvWaitKey();
