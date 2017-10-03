@@ -1,8 +1,15 @@
+### 
+# x coordinaten
+
+# y coordinaten
+
+# z coordinaten
+
 # coordinaten om tray op te pakken
 startposition 						= p[0.394,-0.571,0.020,1.6782,0.8359,1.738]
 tray_oppakken_position  			= p[0.394,-0.273,0.024,1.6782,0.8359,1.738]
 tray_hoog_brengen_position 			= p[0.394,-0.273,0.820,1.6782,0.8359,1.738]
-tray_draaien_position 				= p[0.394,-0.273,0.820,1.4943,-0.552,0.5603]
+tray_draaien_position 				= p[0.394,-0.173,0.820,1.4943,-0.552,0.5603]
 
 startposition_hoog 					= p[0.394,-0.571,0.820,1.6782,0.8359,1.738]
 
