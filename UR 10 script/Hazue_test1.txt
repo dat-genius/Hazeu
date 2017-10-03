@@ -1,0 +1,78 @@
+# coordinaten om tray op te pakken
+startposition 						= p[0.394,-0.571,0.020,1.6782,0.8359,1.738]
+tray_oppakken_position  			= p[0.394,-0.273,0.024,1.6782,0.8359,1.738]
+tray_hoog_brengen_position 			= p[0.394,-0.273,0.820,1.6782,0.8359,1.738]
+tray_draaien_position 				= p[0.394,-0.273,0.820,1.4943,-0.552,0.5603]
+
+startposition_hoog 					= p[0.394,-0.571,0.820,1.6782,0.8359,1.738]
+
+# coordinaten voor tray 1
+#tray1_naast_de_doos_position 		= p[0.453,-0.273,0.823,1.4943,-0.552,0.5603]
+tray1_boven_de_doos_position 		= p[0.453,-0.670,0.823,1.4943,-0.552,0.5603]
+tray1_op_het_tafeltje_position  	= p[0.453,-0.670,0.635,1.4943,-0.552,0.5603]
+EOAT_uit_tray1_position 			= p[0.145,-0.670,0.635,1.4943,-0.552,0.5603]
+return_after_tray1 					= p[0.145,-0.273,0.820,1.4943,-0.552,0.5603]
+
+# coordinaten voor tray 2
+tray2_naast_de_doos_position 		= p[0.106,-0.273,0.823,1.4943,-0.552,0.5603]
+tray2_boven_de_doos_position 		= p[0.106,-0.670,0.823,1.4943,-0.552,0.5603]
+tray2_op_het_tafeltje_position  	= p[0.106,-0.670,0.635,1.4943,-0.552,0.5603]
+EOAT_uit_tray2_position   			= p[-0.194,-0.670,0.635,1.4943,-0.552,0.5603]
+return_after_tray2 					= p[-0.194,-0.273,0.820,1.4943,-0.552,0.5603]
+
+
+#set_digital_out(1,False)  	# tafel uitschuiven besturing
+#set_digital_out(2,False)  	# tafel omhoog besturing
+set_digital_out(3,False)  	# EOAT besturing
+
+
+while(True):
+
+ 
+ #tray 1
+ movel(startposition)
+ 
+ movel(tray_oppakken_position)
+ set_digital_out(3,True)
+ sleep(0.3)
+ 
+ movej(tray_hoog_brengen_position)
+ movej(tray_draaien_position)
+ sleep(0.1)
+ 
+ movej(tray1_boven_de_doos_position)
+ movel(tray1_op_het_tafeltje_position)
+ set_digital_out(3,False)
+ sleep(0.2)
+ 
+ movel(EOAT_uit_tray1_position)
+ movel(return_after_tray1) 
+ movel(startposition_hoog)
+ 
+ #tray 2
+ movel(startposition)
+ 
+ movel(tray_oppakken_position)
+ set_digital_out(3,True)
+ sleep(0.3)
+ 
+ movej(tray_hoog_brengen_position)
+ sleep(0.3)
+ movej(tray_draaien_position)
+ 
+ movel(tray2_naast_de_doos_position)
+ movej(tray2_boven_de_doos_position)
+ movel(tray2_op_het_tafeltje_position)
+ set_digital_out(3,False)
+ sleep(0.3)
+ 
+ movel(EOAT_uit_tray2_position)
+ movel(return_after_tray2)  
+ movej(startposition_hoog)
+
+end
+ 
+ 
+
+ 
+
