@@ -1,0 +1,19 @@
+# IO
+table_horizontal_extension = 1		# extend the traysupports of the table sideways, True for extended, False for retracted.
+table_vertical_extension = 2		# extend the table to the top of the box, True for extended, False for retracted.
+EOAT_grab_compression = 3			# compresses the claws of the End of Arm Tool. True for compressed, False for extended.
+
+# Poses
+conveyorpose = p[0.214,-0.453,-0.244,1.6782,0.8359,1.738]		# Pose where the EOAT is around the tray on the supply converor.
+tablepose = p[0.273,-0.850,0.415,1.4943,-0.552,0.5603]			# Pose where the EOAT placed the tray on the retracting table.
+
+#init
+#set_digital_out(table_horizontal_extension,False)
+#set_digital_out(table_vertical_extension,False)
+set_digital_out(EOAT_grab_compression,False)
+
+
+
+while(True):
+
+end

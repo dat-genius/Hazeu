@@ -1,0 +1,3 @@
+set_payload(massa in kg, CG in meters). moet worden aangeroepen als er iets zwaars wordt opgepakt, CG moet dan ook worden gespecificeerd.
+massa is 5kg-ish, CG zijn de combinatie van X en Y 0.20m opzij en Z: 0.26m
+
