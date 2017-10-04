@@ -4,15 +4,17 @@ table_vertical_extension = 2		# extend the table to the top of the box, True for
 EOAT_grab_compression = 3			# compresses the claws of the End of Arm Tool. True for compressed, False for extended.
 
 # Poses
-on_conveyor_pose = p[0.628,-0.061,0.014,1.7211,0.8028,1.7540]		# Pose where the EOAT is around the tray on the supply conveyor.
-on_table_pose = p[0.673,-1.196,0.613,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
+on_conveyor_pose = p[0.642,-0.056,0.013,1.6921,0.8418,1.7081]		# Pose where the EOAT is around the tray on the supply conveyor.
+on_table_pose = p[0.627,-0.88728,0.63652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
 
 # Calculated Poses
 start_pose = pose_add(on_conveyor_pose, p[0, -0.3, 0.8, 0, 0, 0])
 next_to_conveyer_pose = pose_add(on_conveyor_pose, p[0, -0.3, 0, 0, 0, 0])
 rotated_for_placement_pose = pose_add(on_table_pose, p[0, 0, 0.2, 0, 0, 0])
 above_placement1_pose = pose_add(on_table_pose, p[0, 0, 0.2, 0, 0, 0])
-remove_tool1_pose = pose_add(on_table_pose, p[-0.3, 0, 0, 0, 0, 0])
+remove_tool1_pose = pose_add(on_table_pose, p[-0.7, 0, 0, 0, 0, 0])
+return_for_start_pose_1 = pose_add(on_table_pose, p[-0.7, 0.4, 0, 0, 0, 0])
+return_for_start_pose_2 = pose_add(on_conveyor_pose, p[0, 0, 0.613, 0, 0, 0])
 
 #init
 #set_digital_out(table_horizontal_extension,False)
@@ -20,15 +22,15 @@ remove_tool1_pose = pose_add(on_table_pose, p[-0.3, 0, 0, 0, 0, 0])
 set_digital_out(EOAT_grab_compression,False)
 
 movej(start_pose)
-sleep(1)
+sleep(0.1)
 
 while(True):
 	# Grab from conveyor
 	movel(next_to_conveyer_pose)
-	sleep(1)
+	sleep(0.1)
 	movel(on_conveyor_pose)
 	set_digital_out(EOAT_grab_compression, True)
-	sleep(0.3)
+	sleep(0.1)
 	
 	# Place on table
 	movel(start_pose)
@@ -36,12 +38,14 @@ while(True):
 	movel(above_placement1_pose)
 	movel(on_table_pose)
 	set_digital_out(EOAT_grab_compression, False)
-	sleep(0.3)
+	sleep(0.1)
 	movel(remove_tool1_pose)
-	
+	movel(return_for_start_pose_1)
+	movel(return_for_start_pose_2)
 	
 	#for testing
 	movej(start_pose)
 	#set_digital_out(EOAT_grab_compression, False)
 end
-#en werkt het nu?
+#Versie 0.3
+#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Hazeu_Relative.txt root@192.168.0.1:/programs/
