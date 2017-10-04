@@ -8,7 +8,7 @@ on_conveyor_pose = p[0.642,-0.056,0.013,1.6921,0.8418,1.7081]		# Pose where the 
 on_table_pose = p[0.627,-0.88728,0.63652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
 
 # Calculated Poses
-start_pose = pose_add(on_conveyor_pose, p[0, -0.3, 0.8, 0, 0, 0])
+start_pose = pose_add(on_conveyor_pose, p[0, -0.2, 0.8, 0, 0, 0])
 next_to_conveyer_pose = pose_add(on_conveyor_pose, p[0, -0.3, 0, 0, 0, 0])
 rotated_for_placement_pose = pose_add(on_table_pose, p[0, 0, 0.2, 0, 0, 0])
 above_placement1_pose = pose_add(on_table_pose, p[0, 0, 0.2, 0, 0, 0])
@@ -47,5 +47,5 @@ while(True):
 	movej(start_pose)
 	#set_digital_out(EOAT_grab_compression, False)
 end
-#Versie 0.3
+#Versie 0.5
 #uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Hazeu_Relative.txt root@192.168.0.1:/programs/
