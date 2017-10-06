@@ -4,9 +4,10 @@ table_vertical_extension = 1		# extend the table to the top of the box, True for
 EOAT_grab_compression = 2			# compresses the claws of the End of Arm Tool. True for compressed, False for extended.
 
 # Poses
-on_conveyor_pose = p[0.642,0.146,0.013,1.6921,0.8418,1.7081]		# Pose where the EOAT is around the tray on the supply conveyor.
+on_conveyor_pose = p[0.642,0.146,0.013,1.6921,0.8418,1.7081]			# Pose where the EOAT is around the tray on the supply conveyor.
 on_table_pose = p[0.627,-0.88728,0.63652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
-start_pose = [-0.688721,-1.52714,-1.23662,-3.52807,-2.29276,0.675166]
+start_pose = [-0.688721,-1.52714,-1.23662,-3.52807,-2.29276,0.675166]	
+next_to_second_place = [-1.18348,-0.563101,-1.6274,-4.06333,-1.21742,0.696282]
 
 # Calculated Poses
 next_to_conveyer_pose = pose_add(on_conveyor_pose, p[0, -0.4, 0, 0, 0, 0])
@@ -53,7 +54,8 @@ while(True):
 		tray = 1
 	else:
 		textmsg("this code is reached")
-		movej(pose_via_above_placement2_pose)
+		movel(pose_via_above_placement2_pose)
+		movej(next_to_second_place)
 		movej(above_placement2_pose)
 		movel(on_table_pose_2)
 		tray = 0
