@@ -1,6 +1,7 @@
 # IO
-table_horizontal_extension = 0		# extend the traysupports of the table sideways, True for extended, False for retracted.
-table_vertical_extension = 1		# extend the table to the top of the box, True for extended, False for retracted.
+
+table_vertical_extension = 0		# extend the table to the top of the box, True for extended, False for retracted.
+table_horizontal_extension = 1		# extend the traysupports of the table sideways, True for extended, False for retracted.
 EOAT_grab_compression = 2			# compresses the claws of the End of Arm Tool. True for compressed, False for extended.
 
 # Poses
@@ -24,8 +25,26 @@ return_for_start_pose_2 = pose_add(on_conveyor_pose, p[0, -0.2, 0.613, 0, 0, 0])
 
 #init
 #set_digital_out(table_horizontal_extension,False)
-#set_digital_out(table_vertical_extension,False)
 set_digital_out(EOAT_grab_compression,False)
+
+				#sensor testing vertical up
+				set_digital_out(table_vertical_extension,True)
+				while(get_digital_in(1)):
+				sleep(0.1)
+				textmsg("hier is die")
+				end
+				set_digital_out(table_horizontal_extension,True)
+				sleep(2)
+				#sensor testing vertical down
+
+				set_digital_out(table_vertical_extension,False)
+				while(get_digital_in(1)==False):
+				sleep(0.1)
+				textmsg("hier is die")
+				end
+				set_digital_out(table_horizontal_extension,False)
+
+				halt
 
 # integers
 tray = 0
