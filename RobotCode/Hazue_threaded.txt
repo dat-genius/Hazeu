@@ -1,0 +1,87 @@
+# Calculated Poses
+next_to_conveyer_pose = pose_add(on_conveyor_pose, p[0, -0.4, 0, 0, 0, 0])
+rotated_for_placement_pose = pose_add(on_table_pose, p[0.2, 0.4, 0.2, 0, 0, 0])
+
+above_placement1_pose = pose_add(on_table_pose, p[0, 0, 0.2, 0, 0, 0])
+above_placement2_pose = pose_add(on_table_pose, p[-0.3, 0, 0.2, 0, 0, 0])
+pose_via_above_placement2_pose = pose_add(on_table_pose, p[-0.3, 0.4, 0.2, 0, 0, 0])
+on_table_pose_2 = pose_add(on_table_pose, p[-0.295, 0, 0, 0, 0, 0])
+
+remove_tool_pose = pose_add(on_table_pose, p[-0.7, 0, 0, 0, 0, 0])
+return_for_start_pose_1 = pose_add(on_table_pose, p[-0.7, 0.4, 0, 0, 0, 0])
+return_for_start_pose_2 = pose_add(on_conveyor_pose, p[0, -0.2, 0.613, 0, 0, 0])
+
+#init
+#set_digital_out(table_horizontal_extension,False)
+set_digital_out(EOAT_grab_compression,False)
+
+# integers
+tray = 0
+
+# Inputs
+start_signal = poort?
+camera_signal = poort?
+tray_is_ready_signal = poort?
+emergency_signal = poort?
+wait_for_running_signal = poort?
+
+
+while get_digital_in(wait_for_running_signal) == get_digital_in(False or emergency_signal) == True:
+	sleep(0.1)
+end
+
+thread movementThread():
+	movej(start_pose)
+	sleep(0.1)
+	
+	while(get_digital_in(start_signal) == True):
+		# Grab from conveyor
+		movel(next_to_conveyer_pose)
+		sleep(0.1)
+		movel(on_conveyor_pose)
+		set_digital_out(EOAT_grab_compression, True)
+		sleep(0.1)
+		
+		# Place on table
+		movel(start_pose)
+		local_pose = get_actual_joint_positions()
+		local_pose[0] = local_pose[0] + 0.9
+		local_pose[4] = local_pose[4] + 2.47
+		movej(local_pose)
+		
+		if tray == 0:
+			movej(above_placement1_pose)
+			movel(on_table_pose)
+			tray = 1
+		else:
+			textmsg("this code is reached")
+			movel(pose_via_above_placement2_pose)
+			movej(next_to_second_place)
+			movej(above_placement2_pose)
+			movel(on_table_pose_2)
+			tray = 0
+		end
+		
+		set_digital_out(EOAT_grab_compression, False)
+		sleep(0.1)
+		movel(remove_tool_pose)
+		movel(return_for_start_pose_1)
+		movel(return_for_start_pose_2)
+		
+		#for testing
+		movej(start_pose)
+		#set_digital_out(EOAT_grab_compression, False)
+	end
+return
+end
+
+thrd = run movementThread()
+
+while get_digital_in(emergency_signal) == False and get_digital_in(camera_signal) == False:
+	sleep(0.1)
+end
+
+kill thrd
+
+#Versie 0.5
+#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Hazeu_Relative.txt root@192.168.0.1:/programs/
