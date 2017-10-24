@@ -1,0 +1,11 @@
+Write:
+NoodStop
+Stop
+Start
+
+
+Read:
+Both placed
+Stop
+Mistakes were made
+Doos staat klaar
