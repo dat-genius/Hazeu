@@ -1,11 +1,10 @@
 Write:
 NoodStop
-Stop
-Start
+Running
+Next_box_ready
 
 
 Read:
 Both placed
 Stop
-Mistakes were made
-Doos staat klaar
+Doos is klaar
