@@ -1,0 +1,9 @@
+modbus_add_signal("192.168.0.1", 255, 150, 3, "output1")
+test = modbus_get_signal_status("output1",False)
+modbus_set_output_register("output1",151,False)
+textmsg("dit is wat er uit komt", test)
+while (True):
+	sleep(0.1)
+end
+halt
+#pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\register_test.txt root@192.168.0.1:/programs/

@@ -1,0 +1,54 @@
+#camera settings
+port = 10000
+ip = "192.168.0.20"
+socket_name = "Cognex"
+
+socket = socket_open(ip, port, socket_name)	
+textmsg("Verbinding gelukt?: ", socket)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+
+socket_send_string("admin" , socket_name)
+socket_send_byte([13,10], socket_name)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+
+socket_send_byte(13, socket_name)
+socket_send_byte(10, socket_name)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+
+while (True) :
+  
+	textmsg("Sending trigger")
+	socket_send_line("SW8", socket_name)
+	socket_send_byte([13, 10], socket_name)
+
+	triggerstatus = socket_read_string(socket_name) 
+
+	if triggerstatus == "1": 
+		textmsg("Trigger successful: ", triggerstatus)
+	else:
+		textmsg("Trigger failed: ", triggerstatus)
+	end
+	
+	sleep(0.1) #Just to be sure, this can probably be removed
+
+	textmsg("Requesting status")
+  
+	socket_send_line("GVB024", socket_name)
+	socket_send_byte([13, 10], socket_name)
+
+	socket_read_binary_integer(1, socket_name)
+	camera_signal = socket_read_ascii_float(1, socket_name)
+	if camera_signal == 1:
+		both_trays_placed = True
+	end
+	textmsg("Ontvangen string", camera_signal)
+end
+
+socket_close(socket_name)
+#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Camera_test2.txt root@192.168.0.1:/programs/

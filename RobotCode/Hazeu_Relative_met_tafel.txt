@@ -1,0 +1,200 @@
+# IO
+EOAT_grab_compression = 0			# compresses the claws of the End of Arm Tool. True for compressed, False for extended.
+
+# Poses
+on_conveyor_pose = p[0.650,0.0716,0.8355,1.6735,0.7978,1.7125]			# Pose where the EOAT is around the tray on the supply conveyor.
+on_table_pose = p[0.637,-0.93028,0.68652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
+start_pose = [-0.682505,-1.54098,-1.18408,-3.54589,-2.26741,0.694449]	
+next_to_second_tray = [-0.738792,-0.830498,-1.3536,-4.08321,-0.714268,0.679946]
+rotation_pose = [0.21745,-1.54081,-1.18425,-3.54603,0.202509,0.694442]
+
+# Calculated Poses
+lift_tray_pose = pose_add(on_conveyor_pose, p[0, 0, 0.04, 0, 0, 0])
+next_to_conveyer_pose = pose_add(on_conveyor_pose, p[0, -0.4, 0, 0, 0, 0])
+rotated_for_placement_pose = pose_add(on_table_pose, p[0.2, 0.4, 0.2, 0, 0, 0])
+on_conveyor_pose_for_2nd_tray = pose_add(on_conveyor_pose, p[0, 0.29, 0, 0, 0, 0])
+
+above_placement1_pose = pose_add(on_table_pose, p[0, 0, 0.2, 0, 0, 0])
+above_placement2_pose = pose_add(on_table_pose, p[-0.3, 0, 0.2, 0, 0, 0])
+pose_via_above_placement2_pose = pose_add(on_table_pose, p[-0.3, 0.5, 0.154, 0, 0, 0])
+on_table_pose_2 = pose_add(on_table_pose, p[-0.27, 0, 0, 0, 0, 0])
+
+remove_tool_pose = pose_add(on_table_pose, p[-0.7, 0, 0, 0, 0, 0])
+return_for_start_pose_1 = pose_add(on_table_pose, p[-0.7, 0.4, 0.154, 0, 0, 0])
+return_for_start_pose_2 = pose_add(on_conveyor_pose, p[0, -0.2, 0, 0, 0, 0])
+
+# modbus signals  
+modbus_add_signal("192.168.0.1", 255, 130, 2, "emergency_stop")
+modbus_add_signal("192.168.0.1", 255, 131, 2, "run_signal")
+modbus_add_signal("192.168.0.1", 255, 132, 2, "next_box_ready")
+modbus_add_signal("192.168.0.1", 255, 136, 3, "error")
+modbus_add_signal("192.168.0.1", 255, 137, 3, "placing")
+modbus_add_signal("192.168.0.1", 255, 138, 3, "finished_placing")
+
+#init
+set_digital_out(EOAT_grab_compression,False)
+modbus_set_output_register("error", 1, False)
+
+# integers
+tray = 0
+
+#camera settings
+port = 10000
+ip = "192.168.0.20"
+socket_name = "Cognex"
+
+socket = socket_open(ip, port, socket_name)	
+textmsg("Verbinding gelukt?: ", socket)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+
+socket_send_string("admin" , socket_name)
+socket_send_byte([13,10], socket_name)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+
+socket_send_byte(13, socket_name)
+socket_send_byte(10, socket_name)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+	
+thread movementThread():
+	nothing_on_table = False
+	both_trays_placed = True
+	
+	while(True):
+		
+		modbus_set_output_register("finished_placing", 0, False)
+		while(modbus_get_signal_status("run_signal", False)==False):
+			sleep(0.1)
+		end
+		
+		# Grab from conveyor
+		if tray == 0:
+			movej(start_pose)
+			sleep(0.1)
+			# Picking up first tray
+			movel(on_conveyor_pose)
+		else:
+			# Picking up second tray
+			movel(on_conveyor_pose_for_2nd_tray)
+		end
+		
+		set_digital_out(EOAT_grab_compression, True)
+		sleep(0.4)
+		movel(lift_tray_pose)
+		
+		if tray == 0:
+			# Rotate to position for placing
+			#movej(start_pose)
+			
+			while(modbus_get_signal_status("next_box_ready", False)==False):
+				sleep(0.1)
+			end
+			
+			#camera check: nothing on the table
+			while (nothing_on_table == False) :
+				textmsg("Sending trigger")
+				socket_send_line("SW8", socket_name)
+				socket_send_byte([13, 10], socket_name)
+
+				triggerstatus = socket_read_string(socket_name) 
+
+				if triggerstatus == "1": 
+					textmsg("Trigger successful: ", triggerstatus)
+				else:
+					textmsg("Trigger failed: ", triggerstatus)
+				end
+				
+				sleep(0.1) #Just to be sure, this can probably be removed
+
+				textmsg("Requesting status")
+			  
+				socket_send_line("GVB025", socket_name)
+				socket_send_byte([13, 10], socket_name)
+
+				socket_read_binary_integer(1, socket_name)
+				camera_signal = socket_read_ascii_float(1, socket_name)
+				if camera_signal[1] == 2:
+					nothing_on_table = True
+				end
+				textmsg("Ontvangen string", camera_signal)
+			end
+			
+			modbus_set_output_register("placing", 1, False)
+			
+			# Placing the first tray
+			movej(above_placement1_pose)
+			movel(on_table_pose)
+			tray = 1
+		else:
+			# Rotate to position for placing
+			movej(next_to_second_tray)
+			
+			# Placing the second tray
+			movej(above_placement2_pose)
+			movel(on_table_pose_2)
+			tray = 0
+			both_trays_placed = False
+		end
+		
+		# Removing tool from table
+		set_digital_out(EOAT_grab_compression, False)
+		sleep(0.1)
+		movel(remove_tool_pose)
+		
+		#camera check for placed trays
+		while (both_trays_placed == False) :
+			textmsg("Sending trigger")
+			socket_send_line("SW8", socket_name)
+			socket_send_byte([13, 10], socket_name)
+
+			triggerstatus = socket_read_string(socket_name) 
+
+			if triggerstatus == "1": 
+				textmsg("Trigger successful: ", triggerstatus)
+			else:
+				textmsg("Trigger failed: ", triggerstatus)
+			end
+			
+			sleep(0.1) #Just to be sure, this can probably be removed
+
+			textmsg("Requesting status")
+		  
+			socket_send_line("GVB026", socket_name)
+			socket_send_byte([13, 10], socket_name)
+
+			socket_read_binary_integer(1, socket_name)
+			camera_signal = socket_read_ascii_float(1, socket_name)
+			if camera_signal[1] == 1:
+				both_trays_placed = True
+			end
+			textmsg("Ontvangen string", camera_signal)
+		end
+		
+		if(tray == 0):
+			modbus_set_output_register("placing", 0, False)
+			modbus_set_output_register("finished_placing", 1, False)
+		end
+		
+		movel(return_for_start_pose_1)
+		movel(return_for_start_pose_2)
+
+	end
+end
+
+thrd = run movementThread()
+
+while (modbus_get_signal_status("emergency_stop", False)== False):
+	sleep(0.1)
+end
+
+kill thrd
+socket_close(socket_name)
+sleep(0.1)
+
+#Versie 0.7
+#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Hazeu_Relative_met_tafel.txt root@192.168.0.1:/programs/

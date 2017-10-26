@@ -1,0 +1,28 @@
+test = False
+test1 = False
+x = 2
+textmsg(get_actual_joint_positions())
+halt
+
+thread movementThread():
+	while test == False or test1 == True:
+		sleep(0.1)
+		textmsg("in de movementThread")
+		set_digital_out(5,True)
+		test = True
+		x = 0
+		set_digital_out(5,False)
+	end
+	#return
+end
+
+thrd = run movementThread()
+while x > 1:
+	set_digital_out(2,True)
+	sleep(0.1)
+end
+sleep(1)
+set_digital_out(6,True)
+kill thrd
+textmsg("hier eindigt de code")
+#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Or_test.txt root@192.168.0.1:/programs/

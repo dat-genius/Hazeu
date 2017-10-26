@@ -1,0 +1,95 @@
+#Connect to a cognex camera, tested on UR Firmware 1.8 and 3.3
+
+### Configuration of camera settings, adjust where needed ###
+port = 10000
+ip = "192.168.0.20"
+socket_name = "Cognex"
+
+
+### Connect to camera and return status ###
+socket = socket_open(ip, port, socket_name)	
+textmsg("Verbinding gelukt?: ", socket)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+
+socket_send_string("admin" , socket_name)
+socket_send_byte([13,10], socket_name)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+	
+### UR / Cognex weirdness. You can't send the list of bytes if you have an empty string, so we just send them separately
+socket_send_string("", socket_name) # It is an empty string, you could skip this step
+
+
+socket_send_byte(13, socket_name)
+socket_send_byte(10, socket_name)
+
+receive = socket_read_string(socket_name)
+textmsg(receive)
+
+
+### Start workloop ###
+  
+while (True) :
+  
+	### Trigger camera, only works if camera is in ONLINE mode
+  
+	textmsg("Sending trigger")
+  	socket_send_line("SW8", socket_name)
+  	socket_send_byte([13, 10], socket_name)
+
+  	triggerstatus = socket_read_string(socket_name) 
+
+	if triggerstatus == "1": 
+		textmsg("Trigger successful: ", triggerstatus)
+	else:
+		textmsg("Trigger failed: ", triggerstatus)
+	end
+	
+	sleep(1) #Just to be sure, this can probably be removed
+
+
+ 	### Receive datastring from camera
+  
+  	textmsg("Requesting coordinates")
+  
+  	socket_send_line("GVB021", socket_name)
+  	socket_send_byte([13, 10], socket_name)
+
+	# On Firmware 1.8 you don’t have the function socket_read_line
+	# Because of this you get a response from the camera that looks like:
+	# 1
+	# (12.0080, 24.1234, 78.5424)
+	# The socket_read_ascii_float can’t handle the status code (the “1” from line one)
+	# With the function socket_read_binary_integer you can cut off the first 2 characters
+	# That will be the 1 and the parentheses “1(“
+	# So now we lost the opening parentheses, which is bad!
+	# The socket_read_ascii_float function will really ONLY work if you get the
+	# expected format. This format is “(12.0080, 24.1234, 78.5424)” Without the “”
+	# To fix this you add a leading character to the data string in Cognex. You will then
+	# receive
+	# 1
+	# ?(12.0080, 24.1234, 78.5424)
+	# Note the leading question mark, but it can be any character
+	# 
+	# Expected format of data string will be: “?(x, y, z)” where x, y, and z are floats or 
+	# integers
+	# 
+		
+	socket_read_binary_integer(1, socket_name)
+  	rec=socket_read_ascii_float(1, socket_name)
+
+	### On firmware 3.3 the socket_read_ascii_float function doesn’t read all data
+	# from the camera. Uncomment the next line or else the triggerstatus will break
+	# If you are running 3.3 firmware please just use the other script!
+	# buf = socket_read_string(socket_name)
+
+    	textmsg("Ontvangen string", rec)
+end
+
+### If you break the loop and end the program, close the socket
+socket_close(socket_name)
+
+#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Camera_test.txt root@192.168.0.1:/programs/
