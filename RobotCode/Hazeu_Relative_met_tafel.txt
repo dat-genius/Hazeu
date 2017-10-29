@@ -3,7 +3,7 @@ EOAT_grab_compression = 0			# compresses the claws of the End of Arm Tool. True 
 
 # Poses
 on_conveyor_pose = p[0.650,0.0716,0.8355,1.6735,0.7978,1.7125]			# Pose where the EOAT is around the tray on the supply conveyor.
-on_table_pose = p[0.637,-0.93028,0.68652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
+on_table_pose = p[0.632,-0.91028,0.68652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
 start_pose = [-0.682505,-1.54098,-1.18408,-3.54589,-2.26741,0.694449]	
 next_to_second_tray = [-0.738792,-0.830498,-1.3536,-4.08321,-0.714268,0.679946]
 rotation_pose = [0.21745,-1.54081,-1.18425,-3.54603,0.202509,0.694442]
@@ -113,7 +113,7 @@ thread movementThread():
 
 				textmsg("Requesting status")
 			  
-				socket_send_line("GVB025", socket_name)
+				socket_send_line("GVB023", socket_name)
 				socket_send_byte([13, 10], socket_name)
 
 				socket_read_binary_integer(1, socket_name)
@@ -164,7 +164,7 @@ thread movementThread():
 
 			textmsg("Requesting status")
 		  
-			socket_send_line("GVB026", socket_name)
+			socket_send_line("GVB022", socket_name)
 			socket_send_byte([13, 10], socket_name)
 
 			socket_read_binary_integer(1, socket_name)
@@ -180,7 +180,7 @@ thread movementThread():
 			modbus_set_output_register("finished_placing", 1, False)
 		end
 		
-		movel(return_for_start_pose_1)
+		movel(return_for_start_pose_1) 
 		movel(return_for_start_pose_2)
 
 	end
