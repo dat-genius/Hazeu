@@ -3,7 +3,7 @@ EOAT_grab_compression = 0			# compresses the claws of the End of Arm Tool. True 
 
 # Poses
 on_conveyor_pose = p[0.650,0.0716,0.8355,1.6735,0.7978,1.7125]			# Pose where the EOAT is around the tray on the supply conveyor.
-on_table_pose = p[0.632,-0.91028,0.68652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
+on_table_pose = p[0.602,-0.91028,0.68652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
 start_pose = [-0.682505,-1.54098,-1.18408,-3.54589,-2.26741,0.694449]	
 next_to_second_tray = [-0.738792,-0.830498,-1.3536,-4.08321,-0.714268,0.679946]
 rotation_pose = [0.21745,-1.54081,-1.18425,-3.54603,0.202509,0.694442]
@@ -72,28 +72,24 @@ thread movementThread():
 			sleep(0.1)
 		end
 		
-		# Grab from conveyor
 		if tray == 0:
+			
 			movej(start_pose)
 			sleep(0.1)
-			# Picking up first tray
-			movel(on_conveyor_pose)
-		else:
-			# Picking up second tray
-			movel(on_conveyor_pose_for_2nd_tray)
-		end
-		
-		set_digital_out(EOAT_grab_compression, True)
-		sleep(0.4)
-		movel(lift_tray_pose)
-		
-		if tray == 0:
-			# Rotate to position for placing
-			#movej(start_pose)
-			
+						
 			while(modbus_get_signal_status("next_box_ready", False)==False):
 				sleep(0.1)
 			end
+			
+			# Picking up first tray
+			movel(on_conveyor_pose)
+			
+			#EOAT ON
+			set_digital_out(EOAT_grab_compression, True)
+			sleep(0.4)
+			movel(lift_tray_pose)
+			
+			#sleep(1) #waiting for the table
 			
 			#camera check: nothing on the table
 			while (nothing_on_table == False) :
@@ -131,6 +127,15 @@ thread movementThread():
 			movel(on_table_pose)
 			tray = 1
 		else:
+		
+			# Picking up second tray
+			movel(on_conveyor_pose_for_2nd_tray)
+			
+			#EOAT ON
+			set_digital_out(EOAT_grab_compression, True)
+			sleep(0.4)
+			movel(lift_tray_pose)
+		
 			# Rotate to position for placing
 			movej(next_to_second_tray)
 			
@@ -196,5 +201,5 @@ kill thrd
 socket_close(socket_name)
 sleep(0.1)
 
-#Versie 0.7
+#Versie 1.0
 #uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Hazeu_Relative_met_tafel.txt root@192.168.0.1:/programs/
