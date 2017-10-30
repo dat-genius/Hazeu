@@ -81,6 +81,7 @@ thread movementThread():
 				sleep(0.1)
 			end
 			
+<<<<<<< HEAD
 			# Picking up first tray
 			movel(on_conveyor_pose)
 			
@@ -90,9 +91,13 @@ thread movementThread():
 			movel(lift_tray_pose)
 			
 			#sleep(1) #waiting for the table
+=======
+			modbus_set_output_register("placing", 1, False)
+>>>>>>> b18b4fe951da0ffd73471aa0c3fbe2c2a814cf01
 			
 			#camera check: nothing on the table
 			while (nothing_on_table == False) :
+				modbus_set_output_register("placing", 2, False)
 				textmsg("Sending trigger")
 				socket_send_line("SW8", socket_name)
 				socket_send_byte([13, 10], socket_name)
@@ -120,13 +125,13 @@ thread movementThread():
 				textmsg("Ontvangen string", camera_signal)
 			end
 			
-			modbus_set_output_register("placing", 1, False)
-			
 			# Placing the first tray
+			modbus_set_output_register("placing", 3, False)
 			movej(above_placement1_pose)
 			movel(on_table_pose)
 			tray = 1
 		else:
+<<<<<<< HEAD
 		
 			# Picking up second tray
 			movel(on_conveyor_pose_for_2nd_tray)
@@ -136,6 +141,9 @@ thread movementThread():
 			sleep(0.4)
 			movel(lift_tray_pose)
 		
+=======
+			modbus_set_output_register("placing", 4, False)
+>>>>>>> b18b4fe951da0ffd73471aa0c3fbe2c2a814cf01
 			# Rotate to position for placing
 			movej(next_to_second_tray)
 			
@@ -153,6 +161,7 @@ thread movementThread():
 		
 		#camera check for placed trays
 		while (both_trays_placed == False) :
+			modbus_set_output_register("placing", 5, False)
 			textmsg("Sending trigger")
 			socket_send_line("SW8", socket_name)
 			socket_send_byte([13, 10], socket_name)
