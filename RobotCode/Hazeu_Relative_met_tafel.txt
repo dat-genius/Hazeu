@@ -27,6 +27,7 @@ return_for_start_pose_2 = pose_add(on_conveyor_pose, p[0, -0.2, 0, 0, 0, 0])
 modbus_add_signal("192.168.0.1", 255, 130, 2, "emergency_stop")
 modbus_add_signal("192.168.0.1", 255, 131, 2, "run_signal")
 modbus_add_signal("192.168.0.1", 255, 132, 2, "next_box_ready")
+modbus_add_signal("192.168.0.1", 255, 133, 2, "skip_camera")
 modbus_add_signal("192.168.0.1", 255, 136, 3, "error")
 modbus_add_signal("192.168.0.1", 255, 137, 3, "placing")
 modbus_add_signal("192.168.0.1", 255, 138, 3, "finished_placing")
@@ -94,7 +95,7 @@ thread movementThread():
 			end
 			
 			#camera check: nothing on the table
-			while (nothing_on_table == False) :
+			while (nothing_on_table == False and modbus_get_signal_status("skip_camera", False)==False) :
 				modbus_set_output_register("placing", 2, False)
 				textmsg("Sending trigger")
 				socket_send_line("SW8", socket_name)
@@ -146,7 +147,7 @@ thread movementThread():
 			movej(above_placement2_pose)
 			movel(on_table_pose_2)
 			tray = 0
-			both_trays_placed = False
+			both_trays_placed = False	
 		end
 		
 		# Removing tool from table
@@ -154,34 +155,36 @@ thread movementThread():
 		sleep(0.1)
 		movel(remove_tool_pose)
 		
-		#camera check for placed trays
-		while (both_trays_placed == False) :
-			modbus_set_output_register("placing", 5, False)
-			textmsg("Sending trigger")
-			socket_send_line("SW8", socket_name)
-			socket_send_byte([13, 10], socket_name)
+		if (tray == 0):
+			#camera check for  two placed trays
+			while (both_trays_placed == False and modbus_get_signal_status("skip_camera", False)==False) :
+				modbus_set_output_register("placing", 5, False)
+				textmsg("Sending trigger")
+				socket_send_line("SW8", socket_name)
+				socket_send_byte([13, 10], socket_name)
 
-			triggerstatus = socket_read_string(socket_name) 
+				triggerstatus = socket_read_string(socket_name) 
 
-			if triggerstatus == "1": 
-				textmsg("Trigger successful: ", triggerstatus)
-			else:
-				textmsg("Trigger failed: ", triggerstatus)
+				if triggerstatus == "1": 
+					textmsg("Trigger successful: ", triggerstatus)
+				else:
+					textmsg("Trigger failed: ", triggerstatus)
+				end
+				
+				sleep(0.1) #Just to be sure, this can probably be removed
+
+				textmsg("Requesting status")
+			  
+				socket_send_line("GVB022", socket_name)
+				socket_send_byte([13, 10], socket_name)
+
+				socket_read_binary_integer(1, socket_name)
+				camera_signal = socket_read_ascii_float(1, socket_name)
+				if camera_signal[1] == 1:
+					both_trays_placed = True
+				end
+				textmsg("Ontvangen string", camera_signal)
 			end
-			
-			sleep(0.1) #Just to be sure, this can probably be removed
-
-			textmsg("Requesting status")
-		  
-			socket_send_line("GVB022", socket_name)
-			socket_send_byte([13, 10], socket_name)
-
-			socket_read_binary_integer(1, socket_name)
-			camera_signal = socket_read_ascii_float(1, socket_name)
-			if camera_signal[1] == 1:
-				both_trays_placed = True
-			end
-			textmsg("Ontvangen string", camera_signal)
 		end
 		
 		if(tray == 0):
