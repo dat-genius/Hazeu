@@ -80,8 +80,10 @@ thread movementThread():
 			while(modbus_get_signal_status("next_box_ready", False)==False):
 				sleep(0.1)
 			end
-			
-<<<<<<< HEAD
+
+			#acknowledge signal
+			modbus_set_output_register("placing", 1, False)
+
 			# Picking up first tray
 			movel(on_conveyor_pose)
 			
@@ -91,10 +93,7 @@ thread movementThread():
 			movel(lift_tray_pose)
 			
 			#sleep(1) #waiting for the table
-=======
-			modbus_set_output_register("placing", 1, False)
->>>>>>> b18b4fe951da0ffd73471aa0c3fbe2c2a814cf01
-			
+
 			#camera check: nothing on the table
 			while (nothing_on_table == False) :
 				modbus_set_output_register("placing", 2, False)
@@ -131,19 +130,16 @@ thread movementThread():
 			movel(on_table_pose)
 			tray = 1
 		else:
-<<<<<<< HEAD
-		
 			# Picking up second tray
 			movel(on_conveyor_pose_for_2nd_tray)
+			modbus_set_output_register("placing", 4, False)
+
 			
 			#EOAT ON
 			set_digital_out(EOAT_grab_compression, True)
 			sleep(0.4)
 			movel(lift_tray_pose)
 		
-=======
-			modbus_set_output_register("placing", 4, False)
->>>>>>> b18b4fe951da0ffd73471aa0c3fbe2c2a814cf01
 			# Rotate to position for placing
 			movej(next_to_second_tray)
 			
