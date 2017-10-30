@@ -76,10 +76,6 @@ thread movementThread():
 			
 			movej(start_pose)
 			sleep(0.1)
-						
-			while(modbus_get_signal_status("next_box_ready", False)==False):
-				sleep(0.1)
-			end
 
 			#acknowledge signal
 			modbus_set_output_register("placing", 1, False)
@@ -93,7 +89,10 @@ thread movementThread():
 			movel(lift_tray_pose)
 			
 			#sleep(1) #waiting for the table
-
+			while(modbus_get_signal_status("next_box_ready", False)==False):
+				sleep(0.1)
+			end
+			
 			#camera check: nothing on the table
 			while (nothing_on_table == False) :
 				modbus_set_output_register("placing", 2, False)
