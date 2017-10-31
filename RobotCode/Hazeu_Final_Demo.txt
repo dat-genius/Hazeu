@@ -3,7 +3,7 @@ EOAT_grab_compression = 0			# compresses the claws of the End of Arm Tool. True 
 
 # Poses
 on_conveyor_pose = p[0.650,0.0716,0.8355,1.6735,0.7978,1.7125]			# Pose where the EOAT is around the tray on the supply conveyor.
-on_table_pose = p[0.602,-0.91028,0.68652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
+on_table_pose = p[0.612,-0.91028,0.68652,1.4802,-0.5248,0.5759]			# Pose where the EOAT placed the tray on the retracting table.
 start_pose = [-0.682505,-1.54098,-1.18408,-3.54589,-2.26741,0.694449]	
 next_to_second_tray = [-0.738792,-0.830498,-1.3536,-4.08321,-0.714268,0.679946]
 rotation_pose = [0.21745,-1.54081,-1.18425,-3.54603,0.202509,0.694442]
@@ -19,7 +19,7 @@ lift_tray_pose2 = pose_add(on_conveyor_pose_for_2nd_tray, p[0, 0, 0.04, 0, 0, 0]
 above_placement1_pose = pose_add(on_table_pose, p[0, 0, 0.2, 0, 0, 0])
 above_placement2_pose = pose_add(on_table_pose, p[-0.3, 0, 0.2, 0, 0, 0])
 pose_via_above_placement2_pose = pose_add(on_table_pose, p[-0.3, 0.5, 0.154, 0, 0, 0])
-on_table_pose_2 = pose_add(on_table_pose, p[-0.27, 0, 0, 0, 0, 0])
+on_table_pose_2 = pose_add(on_table_pose, p[-0.274, 0, 0.005, 0, 0, 0])
 
 remove_tool_pose = pose_add(on_table_pose, p[-0.7, 0, 0, 0, 0, 0])
 return_for_start_pose_1 = pose_add(on_table_pose, p[-0.7, 0.4, 0.154, 0, 0, 0])
@@ -37,6 +37,8 @@ modbus_add_signal("192.168.0.1", 255, 138, 3, "finished_placing")
 #init
 set_digital_out(EOAT_grab_compression,False)
 modbus_set_output_register("error", 1, False)
+modbus_set_output_register("placing", 0, False)
+modbus_set_output_register("finished_placing", 0, False)
 
 # integers
 tray = 0
@@ -95,6 +97,8 @@ thread movementThread():
 			while(modbus_get_signal_status("next_box_ready", False)==False):
 				sleep(0.1)
 			end
+			
+			sleep(0.5)
 			
 			#camera check: nothing on the table
 			while (nothing_on_table == False):
@@ -217,4 +221,4 @@ socket_close(socket_name)
 sleep(0.1)
 
 #Versie 1.0
-#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Hazeu_Relative_met_tafel.txt root@192.168.0.1:/programs/
+#uploading to UR10 for Ka Chun : pscp C:\Users\kachu\OneDrive\Documenten\GitHub\Hazeu\RobotCode\Hazeu_Final_Demo.txt root@192.168.0.1:/programs/
